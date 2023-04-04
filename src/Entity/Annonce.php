@@ -27,6 +27,9 @@ class Annonce
     #[ORM\ManyToMany(targetEntity: User::class)]
     private Collection $responseUsers;
 
+    #[ORM\ManyToOne]
+    private ?User $prestaAccepted = null;
+
 
     public function __construct()
     {
@@ -94,6 +97,18 @@ class Annonce
     public function removeResponseUser(User $responseUser): self
     {
         $this->responseUsers->removeElement($responseUser);
+
+        return $this;
+    }
+
+    public function getPrestaAccepted(): ?USer
+    {
+        return $this->prestaAccepted;
+    }
+
+    public function setPrestaAccepted(?USer $prestaAccepted): self
+    {
+        $this->prestaAccepted = $prestaAccepted;
 
         return $this;
     }

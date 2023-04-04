@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Annonce;
+use App\Entity\User;
 use App\Repository\AnnonceRepository;
+use App\Repository\UserRepository;
 use App\Service\AnnonceService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -89,6 +91,25 @@ class AnnonceController extends AbstractController
             $prestataires[]=$data;
         }
         return $this->json(['prestataires' => $prestataires]);
+    }
+
+    /**
+     * Accept the Response
+     * @Route("/api/annonce/{id_annonce}/accept/{id_presta}", name="accept_response", methods={"GET"})
+     */
+    public function acceptResponse($id_annonce, $id_presta, EntityManagerInterface $entityManager, UserRepository $userRepository, AnnonceRepository $annonceRepository): Response
+    {
+        $annonce = $annonceRepository->find($id_annonce);
+        if(!$annonce instanceof Annonce){
+            return new JsonResponse(['code'=>Response::HTTP_NOT_FOUND, 'message'=>'Annonce not found'], Response::HTTP_NOT_FOUND, []);
+        }
+        $presta = $userRepository->find($id_presta);
+        if(!$presta instanceof User){
+            return new JsonResponse(['code'=>Response::HTTP_NOT_FOUND, 'message'=>'Prestataire not found'], Response::HTTP_NOT_FOUND, []);
+        }
+        $annonce->setPrestaAccepted($presta);
+        $entityManager->flush();
+        return $this->json(['message' => "Success"]);
     }
 
 
