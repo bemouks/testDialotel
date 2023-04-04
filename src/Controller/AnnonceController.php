@@ -15,16 +15,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class AnnonceController extends AbstractController
 {
     /**
+     * Create Annonce
      * @Route("/api/annonce", name="create_annonce", methods={"POST"})
      */
-    public function createAnnonce(Request $request, AnnonceService $userService): Response
+    public function createAnnonce(Request $request, AnnonceService $annonceService): Response
     {
         // Get the data from the request
         $data = json_decode($request->getContent(), true);
         //Get Current User
         $user = $this->getUser();
         //Create Annonce
-        $annonce = $userService->createOrUpdateAnnonce($user, $data);
+        $annonce = $annonceService->createOrUpdateAnnonce($user, $data);
         // Return a JSON response with a success message
         return $this->json(['idAnnonce' => $annonce->getId()]);
     }

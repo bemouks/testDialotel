@@ -38,9 +38,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Annonce::class)]
     private Collection $annonces;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Carte::class, orphanRemoval: true)]
+    private Collection $cartes;
+
     public function __construct()
     {
         $this->annonces = new ArrayCollection();
+        $this->cartes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -162,6 +166,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getAnnonces(): ArrayCollection
     {
         return $this->annonces;
+    }
+
+    /**
+     * @return Collection<int, Carte>
+     */
+    public function getCartes(): Collection
+    {
+        return $this->cartes;
+    }
+
+    public function addCarte(Carte $carte): self
+    {
+        if (!$this->cartes->contains($carte)) {
+            $this->cartes->add($carte);
+            $carte->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCarte(Carte $carte): self
+    {
+        if ($this->cartes->removeElement($carte)) {
+            // set the owning side to null (unless already changed)
+            if ($carte->getUser() === $this) {
+                $carte->setUser(null);
+            }
+        }
+
+        return $this;
     }
 
 }
